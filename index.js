@@ -2,10 +2,12 @@
 
 class Visleaf {
     constructor(x, y, w, h) {
-        this.x = x
-        this.y = y
-        this.w = w
-        this.h = h
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.isVisible = false;
+        this.hasPlayer = false;
     }
 }
 
@@ -27,23 +29,71 @@ function rectCircleColliding(rect, x, y, r) {
 }
 
 function update(e, ctx, entities) {
-    // Clear canvas
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    const visleaves = entities.visleaves;
 
-    // Draw visleaves
-    ctx.strokeStyle = 'blue';
-    entities.visleaves.forEach(visleaf => {
-        if (rectCircleColliding(visleaf, e.clientX, e.clientY, entities.player.radius)) {
-            ctx.strokeRect(visleaf.x, visleaf.y, visleaf.w, visleaf.h)
+    // Logic
+    {
+        // Check collisions
+        {
+            visleaves.forEach(visleaf => {
+                if (rectCircleColliding(visleaf, e.clientX, e.clientY, entities.player.radius)) {
+                    visleaf.hasPlayer = true;
+                } else {
+                    visleaf.hasPlayer = false;
+                }
+            });
         }
-    });
 
-    // Draw player
-    ctx.strokeStyle = 'black';
-    ctx.beginPath();
-        ctx.arc(e.clientX, e.clientY, entities.player.radius, 0, 2 * Math.PI)
-        ctx.stroke();
+        // Check visibility
+        {
+            visleaves.forEach(visleaf => {
+                visleaf.isVisible = false;
+            });
+
+            if (visleaves[0].hasPlayer) {
+                visleaves[0].isVisible = true;
+                visleaves[1].isVisible = true;
+            }
+            if (visleaves[1].hasPlayer) {
+                visleaves[1].isVisible = true;
+                visleaves[0].isVisible = true;
+                visleaves[2].isVisible = true;
+            }
+            if (visleaves[2].hasPlayer) {
+                visleaves[2].isVisible = true;
+                visleaves[1].isVisible = true;
+            }
+        }
+    }
+
+    // Draw
+    {
+        // Clear canvas
+        {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+
+        // Draw visleaves
+        {
+            ctx.fillStyle = 'gray';
+            ctx.strokeStyle = 'blue';
+            entities.visleaves.forEach(visleaf => {
+                if (visleaf.isVisible) {
+                    ctx.fillRect(visleaf.x, visleaf.y, visleaf.w, visleaf.h)
+                }
+                ctx.strokeRect(visleaf.x, visleaf.y, visleaf.w, visleaf.h)
+            });
+        }
+
+        // Draw player
+        {
+            ctx.strokeStyle = 'green';
+            ctx.beginPath();
+            ctx.arc(e.clientX, e.clientY, entities.player.radius, 0, 2 * Math.PI)
+            ctx.stroke();
+        }
+    }
 }
 
 // Main
