@@ -9,7 +9,7 @@ class Visleaf {
     }
 }
 
-function RectCircleColliding(rect, x, y, r) {
+function rectCircleColliding(rect, x, y, r) {
     const circle = {x: x, y: y, r: r}
 
     const distX = Math.abs(circle.x - rect.x - rect.w / 2);
@@ -23,7 +23,7 @@ function RectCircleColliding(rect, x, y, r) {
 
     var dx = distX-rect.w / 2;
     var dy = distY-rect.h / 2;
-    return ((dx * dx + dy * dy) <= (circle.r * circle.r));
+    return (dx * dx + dy * dy) <= (circle.r * circle.r);
 }
 
 function update(e, ctx, entities) {
@@ -34,32 +34,25 @@ function update(e, ctx, entities) {
     // Draw visleaves
     ctx.strokeStyle = 'blue';
     entities.visleaves.forEach(visleaf => {
-        ctx.strokeRect(visleaf.x, visleaf.y, visleaf.w, visleaf.h)
-    });
-
-    // Draw player
-    const playerRadius = 16;
-
-    ctx.strokeStyle = 'black';
-    entities.visleaves.forEach(visleaf => {
-        if (RectCircleColliding(visleaf, e.clientX, e.clientY, playerRadius)) {
-            ctx.strokeStyle = 'red';
+        if (rectCircleColliding(visleaf, e.clientX, e.clientY, entities.player.radius)) {
+            ctx.strokeRect(visleaf.x, visleaf.y, visleaf.w, visleaf.h)
         }
     });
 
+    // Draw player
+    ctx.strokeStyle = 'black';
     ctx.beginPath();
-        ctx.arc(e.clientX, e.clientY, playerRadius, 0, 2 * Math.PI)
+        ctx.arc(e.clientX, e.clientY, entities.player.radius, 0, 2 * Math.PI)
         ctx.stroke();
 }
 
 // Main
 {
-    const fps = 60;
-
     const canvas = document.querySelector('canvas');
     const ctx = canvas.getContext('2d');
 
     const entities = {
+        player: {radius: 16},
         visleaves: [
             new Visleaf(40, 40, 64, 128),
             new Visleaf(40, 168, 196, 64),
