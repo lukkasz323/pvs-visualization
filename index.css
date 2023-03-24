@@ -1,3 +1,9 @@
+html {
+    font-family: Calibri;
+    text-align: center;
+}
+
 canvas {
     border: 1px solid black;
+    cursor: none;
 }
