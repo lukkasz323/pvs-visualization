@@ -28,15 +28,20 @@ function rectCircleColliding(rect, x, y, r) {
     return (dx * dx + dy * dy) <= (circle.r * circle.r);
 }
 
-function update(e, ctx, entities) {
+function update(e, canvas, ctx, entities) {
     const visleaves = entities.visleaves;
+    const canvasBounds = canvas.getBoundingClientRect();
+    const mouse = {
+        x: e.clientX - canvasBounds.x,
+        y: e.clientY - canvasBounds.y,
+    }
 
     // Logic
     {
         // Check collisions
         {
             visleaves.forEach(visleaf => {
-                if (rectCircleColliding(visleaf, e.clientX, e.clientY, entities.player.radius)) {
+                if (rectCircleColliding(visleaf, mouse.x, mouse.y, entities.player.radius)) {
                     visleaf.hasPlayer = true;
                 } else {
                     visleaf.hasPlayer = false;
@@ -71,7 +76,7 @@ function update(e, ctx, entities) {
         // Clear canvas
         {
             ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
         // Draw visleaves
@@ -90,7 +95,7 @@ function update(e, ctx, entities) {
         {
             ctx.strokeStyle = 'green';
             ctx.beginPath();
-            ctx.arc(e.clientX, e.clientY, entities.player.radius, 0, 2 * Math.PI)
+            ctx.arc(mouse.x, mouse.y, entities.player.radius, 0, 2 * Math.PI)
             ctx.stroke();
         }
     }
@@ -110,5 +115,7 @@ function update(e, ctx, entities) {
         ],
     };
 
-    addEventListener('mousemove', (e) => update(e, ctx, entities));
+    addEventListener('mousemove', (e) => update(e, canvas, ctx, entities));
+
+    console.log(canvas.getBoundingClientRect().y);
 }
