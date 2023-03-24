@@ -116,6 +116,4 @@ function update(e, canvas, ctx, entities) {
     };
 
     addEventListener('mousemove', (e) => update(e, canvas, ctx, entities));
-
-    console.log(canvas.getBoundingClientRect().y);
 }
